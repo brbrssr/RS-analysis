@@ -7,7 +7,7 @@
 #### 🌲Project tree
 ```
 rsanalysis v0.0.1(beta)
-├── librsanalysis.so
+├── librslogic.so
 ├── main.py
 ├──── data
 |     ├── price_series.json
