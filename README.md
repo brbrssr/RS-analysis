@@ -17,10 +17,16 @@ rsanalysis v0.0.1(beta)
 ```
 #### ⚙️Public lib functions
 ```
-rslib.
-├── get_price_series(pair,interval,date)
-├── get_rs_series(pair,interval,date)
-└── get_scaled_rs_series(pair,interval,date,scale)
+.
+├── get_price_series(
+|   pair: *const c_char,
+|   interval: *const c_char,
+|   date: *const c_char,
+|   ) -> *mut c_char
+|
+├──free_rust_heap(*mut c_char)
+|
+└── ...
 ```
 ##### 🕹Parameter values
 ```Rust
