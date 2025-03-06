@@ -7,7 +7,7 @@
 ----
 #### 🌲Project tree
 ```
-rsanalysis v0.0.1(beta)
+rsanalysis
 ├── librslogic.so // or .dll on win 
 ├── main.py
 ├──── data
