@@ -8,7 +8,6 @@ use std::os::raw::c_char;
 
 #[derive(Serialize)]
 struct CandleData {
-    time: i64,
     price: f64,
 }
 
@@ -31,10 +30,12 @@ pub unsafe extern "C" fn get_price_series(
     pair: *const c_char,
     interval: *const c_char,
     date: *const c_char,
+    os: *const c_char,
 ) -> *mut c_char {
     let symbol = unsafe { CStr::from_ptr(pair).to_string_lossy().into_owned() };
     let interval = unsafe { CStr::from_ptr(interval).to_string_lossy().into_owned() };
     let date = unsafe { CStr::from_ptr(date).to_string_lossy().into_owned() };
+    let os = unsafe { CStr::from_ptr(os).to_string_lossy().into_owned() };
 
     let start_time = match chrono::DateTime::parse_from_rfc3339(&date) {
         Ok(dt) => dt.timestamp_millis(),
@@ -42,7 +43,7 @@ pub unsafe extern "C" fn get_price_series(
     };
 
     let url = format!(
-        "https://api.binance.com/api/v3/klines?symbol={}&interval={}&startTime={}",
+        "https://api.binance.com/api/v3/klines?symbol={}&interval={}&startTime={}&limit=1500",
         symbol, interval, start_time
     );
 
@@ -60,11 +61,9 @@ pub unsafe extern "C" fn get_price_series(
         Some(array) => array
             .iter()
             .filter_map(|candle| {
-                let time = candle.get(0)?.as_i64()?;
-
                 let price_str = candle.get(4)?.as_str()?;
                 let price = price_str.parse::<f64>().ok()?;
-                Some(CandleData { time, price })
+                Some(CandleData { price })
             })
             .collect(),
         None => return rust_string_to_c("Error: data isn't array"),
@@ -72,7 +71,13 @@ pub unsafe extern "C" fn get_price_series(
 
     let json_data = json!(filter_data);
 
-    let mut file = match File::create("price_series.json") {
+    let path: String = match os.as_str() {
+        "Windows" => ".\\data\\price_series.json".to_string(),
+        "Linux" => "./data/price_series.json".to_string(),
+        _ => return rust_string_to_c("Error: incorrect operation system"),
+    };
+
+    let mut file = match File::create(path) {
         Ok(f) => f,
         Err(_) => return rust_string_to_c("Error: failed to create a file"),
     };
