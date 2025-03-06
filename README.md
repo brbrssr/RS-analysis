@@ -18,6 +18,13 @@ rsanalysis v0.0.1(beta)
 ```
 #### ⚙️Public lib functions
 - The function ***get_price_series*** takes *const c_char as parameters and returns **mut c_char*.
+
+> pair: *const c_char
+
+> interval: *const c_char
+
+> date: *cosnt c_char
+
 - The function ***free_rust_heap()*** doesn't accept anything and clears the allocated memory.
 #### 🧮Json price_series structure
 ``` Rust
