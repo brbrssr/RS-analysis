@@ -34,6 +34,6 @@ struct param {
 ``` Rust
 struct CandleData {
     time: i64, //UNIX time
-    price: String
+    price: String,
 }
 ```
