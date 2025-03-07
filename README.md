@@ -29,7 +29,9 @@ rsanalysis
 - The function ***free_heap()*** doesn't accept anything and clears the allocated memory.
 #### 🧮Json price_series structure
 ``` Rust
-struct CandleData {
+[
+{
     "price": f64,
 }
+]
 ```
