@@ -47,3 +47,12 @@ rsanalysis
 }
 ]
 ```
+#### 🧮Json rs_series structure
+```
+[
+{
+  rs: f64,
+  window: usize,
+}
+]
+```
