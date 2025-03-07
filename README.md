@@ -18,15 +18,27 @@ rsanalysis
 └── other_python_files
 ```
 #### ⚙️Public lib functions
-- The function ***get_price*** takes *const c_char as parameters and returns **mut c_char*.
+- The function ***get_price()*** returns **mut c_char*.
+  
+  *parameters*
+  > symbol: *const c_char,
+  
+  > interval: *const c_char,
 
-> pair: *const c_char
+  > date: *const c_char,
 
-> interval: *const c_char
+  > os: *const c_char,
 
-> date: *cosnt c_char
+- The function ***get_rs()*** returns **mut c_char*.
+  *parameters*
+  > os: *const c_char,
 
+  > min_window: *const c_char,
+  
 - The function ***free_heap()*** doesn't accept anything and clears the allocated memory.
+
+❄More details on the file ./rs_workspace/readme.md
+
 #### 🧮Json price_series structure
 ``` Rust
 [
