@@ -13,7 +13,7 @@ struct CandleData {
     price: f64,
 }
 
-pub fn file_clean(path: String) -> io::Result<()> {
+fn file_clean(path: String) -> io::Result<()> {
     let mut file = File::create(path)?;
 
     file.write_all(b"")?;
@@ -21,17 +21,8 @@ pub fn file_clean(path: String) -> io::Result<()> {
     Ok(())
 }
 
-pub fn rust_string_to_c(s: &str) -> *mut c_char {
+fn rust_string_to_c(s: &str) -> *mut c_char {
     CString::new(s).unwrap_or_default().into_raw()
-}
-
-pub fn free_rust_heap(s: *mut c_char) {
-    if s.is_null() {
-        return;
-    }
-    unsafe {
-        let _ = CString::from_raw(s);
-    }
 }
 
 pub fn get_price_series(
@@ -47,7 +38,7 @@ pub fn get_price_series(
 
     let start_time = match chrono::DateTime::parse_from_rfc3339(&date_str) {
         Ok(dt) => dt.timestamp_millis(),
-        Err(_) => return rust_string_to_c("Error: invalid date format"),
+        Err(e) => return rust_string_to_c(format!("Error: invalid date format: {}", e).as_str()),
     };
 
     let path = match os_str.as_str() {
@@ -59,7 +50,9 @@ pub fn get_price_series(
     let (num_str, unit) = interval_str.split_at(interval_str.len() - 1);
     let num: i64 = match num_str.parse::<i64>() {
         Ok(value) => value,
-        Err(_) => return rust_string_to_c("Error: failed to parse interval"),
+        Err(e) => {
+            return rust_string_to_c(format!("Error: failed to parse interval: {}", e).as_str());
+        }
     };
 
     let millis: i64 = match unit {
@@ -75,12 +68,18 @@ pub fn get_price_series(
 
     match file_clean(path.clone()) {
         Ok(()) => {}
-        Err(_) => return rust_string_to_c("Error: couldn't clear the file: [price_series.json]"),
+        Err(e) => {
+            return rust_string_to_c(
+                format!("Error: couldn't clear the file: [price_series.json]: {}", e).as_str(),
+            );
+        }
     };
 
     let rt = match tokio::runtime::Runtime::new() {
         Ok(runtime) => runtime,
-        Err(_) => return rust_string_to_c("Error: failed to create runtime"),
+        Err(e) => {
+            return rust_string_to_c(format!("Error: failed to create runtime: {}", e).as_str());
+        }
     };
 
     let result = rt.block_on(load_price_series_parallel(
