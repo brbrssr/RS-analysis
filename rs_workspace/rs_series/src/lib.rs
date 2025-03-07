@@ -1,8 +1,7 @@
-use price_series;
 use serde::Serialize;
 use serde_json::json;
 use std::f64;
-use std::ffi::CStr;
+use std::ffi::{CStr, CString};
 use std::fs;
 use std::io::Write;
 use std::os::raw::c_char;
@@ -11,6 +10,18 @@ use std::os::raw::c_char;
 struct RsSeries {
     window: usize,
     rs: f64,
+}
+
+fn file_clean(path: String) -> std::io::Result<()> {
+    let mut file = fs::File::create(path)?;
+
+    file.write_all(b"")?;
+
+    Ok(())
+}
+
+fn rust_string_to_c(s: &str) -> *mut c_char {
+    CString::new(s).unwrap_or_default().into_raw()
 }
 
 fn linear_regression(x: &[f64], y: &[f64]) -> (f64, f64) {
@@ -27,25 +38,22 @@ fn linear_regression(x: &[f64], y: &[f64]) -> (f64, f64) {
 }
 
 fn write_data(json_data: serde_json::Value, path: String) -> Result<(), String> {
+    let json_string = serde_json::to_string_pretty(&json_data)
+        .map_err(|e| format!("Error: failed to serialize JSON: {}", e))?;
     let mut file = fs::OpenOptions::new()
         .create(true)
         .append(true)
         .open(&path)
         .map_err(|e| format!("Error: failed to open file: {}", e))?;
 
-    writeln!(file, "{}", json_data).map_err(|e| format!("Error: failed to write data: {}", e))?;
+    writeln!(file, "{}", json_string).map_err(|e| format!("Error: failed to write data: {}", e))?;
 
     Ok(())
 }
 
-fn rs_analysis(
-    series: &[f64],
-    min_window: usize,
-    max_window: Option<usize>,
-) -> (Vec<usize>, Vec<f64>) {
+fn rs_analysis(series: &[f64], min_window: usize) -> (Vec<usize>, Vec<f64>) {
     let n = series.len();
-
-    let max_window = max_window.unwrap_or(n / 2);
+    let max_window = n / 2;
     let num_points = 20;
     let log_min = (min_window as f64).log10();
     let log_max = (max_window as f64).log10();
@@ -101,38 +109,24 @@ fn rs_analysis(
     (window_sizes, rs_values)
 }
 
-pub fn get_rs_series(
-    os: *const c_char,
-    min_window: *const c_char,
-    max_window: *const c_char,
-) -> *mut c_char {
+pub fn get_rs_series(os: *const c_char, min_window: *const c_char) -> *mut c_char {
     let os = unsafe { CStr::from_ptr(os).to_string_lossy().into_owned() };
+    let min_window = unsafe { CStr::from_ptr(min_window).to_string_lossy().into_owned() };
 
-    let min_window = unsafe {
-        CStr::from_ptr(min_window)
-            .to_string_lossy()
-            .into_owned()
-            .parse::<usize>()
-            .unwrap()
-    };
-
-    let max_window = unsafe {
-        CStr::from_ptr(max_window)
-            .to_string_lossy()
-            .into_owned()
-            .parse::<usize>()
-            .unwrap()
+    let min_window = match min_window.parse::<usize>() {
+        Ok(w) => w,
+        Err(e) => return rust_string_to_c(format!("Error: parsing min_window: {}", e).as_str()),
     };
 
     let path = match os.as_str() {
         "Windows" => ".\\data\\price_series.json".to_string(),
         "Linux" => "./data/price_series.json".to_string(),
-        _ => return price_series::rust_string_to_c("Error: incorrect operating system"),
+        _ => return rust_string_to_c("Error: incorrect operating system"),
     };
 
     let json_data = match fs::read_to_string(path) {
         Ok(data) => data,
-        Err(_) => return price_series::rust_string_to_c("Error: opening file"),
+        Err(e) => return rust_string_to_c(format!("Error: opening file: {}", e).as_str()),
     };
 
     let series: Vec<f64> = match serde_json::from_str::<Vec<serde_json::Value>>(&json_data) {
@@ -140,10 +134,14 @@ pub fn get_rs_series(
             .iter()
             .filter_map(|v| v.get("price")?.as_f64())
             .collect(),
-        Err(_) => return price_series::rust_string_to_c("Error: parsing JSON"),
+        Err(e) => return rust_string_to_c(format!("Error: parsing JSON: {}", e).as_str()),
     };
 
-    let (window_sizes, rs_series) = rs_analysis(&series, min_window, Some(max_window));
+    if series.is_empty() {
+        return rust_string_to_c("Error: empty data series");
+    }
+
+    let (window_sizes, rs_series) = rs_analysis(&series, min_window);
 
     let log_window_sizes: Vec<f64> = window_sizes.iter().map(|&w| (w as f64).log10()).collect();
 
@@ -155,7 +153,7 @@ pub fn get_rs_series(
     let path = match os.as_str() {
         "Windows" => ".\\data\\rs_series.json".to_string(),
         "Linux" => "./data/rs_series.json".to_string(),
-        _ => return price_series::rust_string_to_c("Error: incorrect operating system"),
+        _ => return rust_string_to_c("Error: incorrect operating system"),
     };
 
     let glued_data: Vec<RsSeries> = window_sizes
@@ -166,15 +164,15 @@ pub fn get_rs_series(
 
     let json_data = json!(glued_data);
 
-    match price_series::file_clean(path.clone()) {
+    match file_clean(path.clone()) {
         Ok(()) => {}
-        Err(_) => return price_series::rust_string_to_c("Error: cleaning file"),
+        Err(e) => return rust_string_to_c(format!("Error: cleaning file: {}", e).as_str()),
     }
 
     match write_data(json_data, path.clone()) {
         Ok(()) => {}
-        Err(_) => return price_series::rust_string_to_c("Error: writing data"),
+        Err(e) => return rust_string_to_c(format!("Error: writing data: {}", e).as_str()),
     }
 
-    price_series::rust_string_to_c(format!("{:.3}H,{:.3}C", hurst_exponent, _intercept).as_str())
+    rust_string_to_c(format!("{:.3}H,{:.3}C", hurst_exponent, _intercept).as_str())
 }
