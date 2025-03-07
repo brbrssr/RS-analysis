@@ -1,5 +1,6 @@
 use price_series;
 use rs_series;
+use std::ffi::CString;
 use std::os::raw::c_char;
 
 #[unsafe(no_mangle)]
@@ -13,15 +14,16 @@ pub extern "C" fn get_price(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn free_heap(ptr: *mut c_char) {
-    price_series::free_rust_heap(ptr);
+pub extern "C" fn free_heap(s: *mut c_char) {
+    if s.is_null() {
+        return;
+    }
+    unsafe {
+        let _ = CString::from_raw(s);
+    }
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn get_rs(
-    os: *const c_char,
-    min_window: *const c_char,
-    max_window: *const c_char,
-) -> *mut c_char {
-    rs_series::get_rs_series(os, min_window, max_window)
+pub extern "C" fn get_rs(os: *const c_char, min_window: *const c_char) -> *mut c_char {
+    rs_series::get_rs_series(os, min_window)
 }
