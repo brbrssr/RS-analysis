@@ -44,7 +44,7 @@ pub fn get_price_series(
     let path = match os_str.as_str() {
         "Windows" => ".\\data\\price_series.json".to_string(),
         "Linux" => "./data/price_series.json".to_string(),
-        _ => return rust_string_to_c("Error: incorrect operating system"),
+        _ => return rust_string_to_c("Error: unsupported operating system"),
     };
 
     let (num_str, unit) = interval_str.split_at(interval_str.len() - 1);
@@ -92,7 +92,7 @@ pub fn get_price_series(
     ));
 
     match result {
-        Ok(_) => rust_string_to_c("Success"),
+        Ok(_) => rust_string_to_c("Time series loaded successfully"),
         Err(e) => rust_string_to_c(&e),
     }
 }
