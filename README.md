@@ -7,9 +7,9 @@
 ----
 #### 🌲Project tree
 ```
-rsanalysis
-├── librslogic.so
-├── rslogic.dll
+rsapp
+├── librslogic.so // for Linux
+├── rslogic.dll // for win
 ├── main.py
 ├──── data
 |     ├── price_series.json
