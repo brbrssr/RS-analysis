@@ -17,20 +17,4 @@ rsanalysis
 |     └── scaled_rs_series.json
 └── other_python_files
 ```
-#### 🧮Json price_series structure
-``` Rust
-[
-{
-    "price": f64,
-}
-]
-```
-#### 🧮Json rs_series structure
-```
-[
-{
-  rs: f64,
-  window: usize,
-}
-]
-```
+**to be continued**
