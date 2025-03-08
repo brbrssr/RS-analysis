@@ -1,28 +1,17 @@
 use chrono::Utc;
+use common::{file_clean, rust_string_to_c};
 use reqwest;
 use serde::Serialize;
 use serde_json::{Value, json};
-use std::ffi::{CStr, CString};
-use std::fs::{File, OpenOptions};
-use std::io::{self, Write};
+use std::ffi::CStr;
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::os::raw::c_char;
 use tokio;
 
 #[derive(Serialize)]
 struct CandleData {
     price: f64,
-}
-
-fn file_clean(path: String) -> io::Result<()> {
-    let mut file = File::create(path)?;
-
-    file.write_all(b"")?;
-
-    Ok(())
-}
-
-fn rust_string_to_c(s: &str) -> *mut c_char {
-    CString::new(s).unwrap_or_default().into_raw()
 }
 
 pub fn get_price_series(

@@ -1,7 +1,8 @@
+use common::{file_clean, rust_string_to_c};
 use serde::Serialize;
 use serde_json::json;
 use std::f64;
-use std::ffi::{CStr, CString};
+use std::ffi::CStr;
 use std::fs;
 use std::io::Write;
 use std::os::raw::c_char;
@@ -10,18 +11,6 @@ use std::os::raw::c_char;
 struct RsSeries {
     window: usize,
     rs: f64,
-}
-
-fn file_clean(path: String) -> std::io::Result<()> {
-    let mut file = fs::File::create(path)?;
-
-    file.write_all(b"")?;
-
-    Ok(())
-}
-
-fn rust_string_to_c(s: &str) -> *mut c_char {
-    CString::new(s).unwrap_or_default().into_raw()
 }
 
 fn linear_regression(x: &[f64], y: &[f64]) -> (f64, f64) {

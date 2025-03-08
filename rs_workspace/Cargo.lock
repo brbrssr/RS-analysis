@@ -763,6 +763,7 @@ name = "price_series"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "common",
  "reqwest",
  "serde",
  "serde_json",
@@ -840,6 +841,7 @@ dependencies = [
 name = "rs_series"
 version = "0.1.0"
 dependencies = [
+ "common",
  "price_series",
  "serde",
  "serde_json",
