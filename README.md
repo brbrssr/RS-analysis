@@ -15,7 +15,7 @@ rsapp
 |     ├── price_series.json
 |     ├── rs_series.json
 |     └── scaled_rs_series.json
-└── other_python_files
+└── ...
 ```
 ### 🖊️Description  
 #### rs_workspace
