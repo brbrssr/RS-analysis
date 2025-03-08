@@ -18,8 +18,7 @@ if os == "Windows":
 elif os == "Linux":
     rust_lib = ctypes.CDLL("./librslogic.so")
 else:
-    print("Error")
-    exit()
+    rust_lib = ctypes.CDLL("./librslogic.so")
 
 """
     Adding the rules of communication with the rust library for each function separately.
@@ -29,14 +28,14 @@ else:
 rust_lib.get_price.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p] #Time series download function
 rust_lib.get_price.restype = ctypes.POINTER(ctypes.c_char)
 
-rust_lib.get_rs.argtypes = [ctypes.c_char_p,ctypes.c_char_p,ctypes.c_char_p] # RS-analysis function 
+rust_lib.get_rs.argtypes = [ctypes.c_char_p,ctypes.c_char_p,ctypes.c_char_p] # RS-analysis function
 rust_lib.get_rs.restype = ctypes.POINTER(ctypes.c_char)
 
 rust_lib.free_heap.argtypes = [ctypes.POINTER(ctypes.c_char)] # Clean heap function, deleting the allocated memory for error or success messages
 rust_lib.free_heap.restype = None
 
 """
-    Calling of time series download function, and deleting of message after processing 
+    Calling of time series download function, and deleting of message after processing
 """
 result_price_ptr = rust_lib.get_price(pair, interval, date, os)
 result_price = ctypes.string_at(result_price_ptr).decode("utf-8")
