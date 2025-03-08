@@ -1,46 +1,45 @@
 import tkinter as tk
 
 
-# Главный класс с элементами ГПИ
+# Main class with GUI elements
 class GUI_elements(tk.Frame):
 
-    # Инициализиция всех финтефлюшек
+    # Initializing all that stuff
     def __init__(self, parent) -> None:
         super().__init__(parent)
 
-        # Создание заголовка
+        # Title creation
         self.title_frame = self.Title(self)
         self.title_frame.pack(pady=10)
 
-        # Создание виджета ввода даты
+        # Date input widget creation
         self.date_input_frame = self.Date_Input(self)
         self.date_input_frame.pack(pady=10)
 
-        # Создание виджета ввода времени
+        # Time input widget creation
         self.time_input_frame = self.Time_Input(self)
         self.time_input_frame.pack(pady=10)
 
-        # Создание виджета ввода торговой пары
+        # Trade pair input widget creation
         self.trade_pair_input_frame = self.Trade_Pair_Input(self)
         self.trade_pair_input_frame.pack(pady=10)
 
-        # Создание виджета ввода временного шага
+        # Time step inout widget creation
         self.time_step_input_frame = self.Time_Step_Input(self)
         self.time_step_input_frame.pack(pady=10)
 
 
-    # Заголовок
+    # Title
     class Title(tk.Frame):
 
         def __init__(self, parent) -> None:
             super().__init__(parent)
 
-            # Заголовок
             self.label = tk.Label(self, text="Enter input data", font=("Calibri", 32, "bold"))
             self.label.pack(pady=10)
 
 
-    # Ввод даты
+    # Date input
     class Date_Input(tk.Frame):
 
         def __init__(self, parent) -> None:
@@ -65,7 +64,7 @@ class GUI_elements(tk.Frame):
             self.year.grid(row=1, column=4)
     
 
-    # Ввод времени
+    # Time input
     class Time_Input(tk.Frame):
 
         def __init__(self, parent) -> None:
@@ -90,7 +89,7 @@ class GUI_elements(tk.Frame):
             self.second.grid(row=1, column=4)
 
 
-    # Ввод торговой пары
+    # Trade pair input
     class Trade_Pair_Input(tk.Frame):
 
         def __init__(self, parent) -> None:
@@ -103,7 +102,7 @@ class GUI_elements(tk.Frame):
             self.trade_pair.grid(row=1, column=0)
     
 
-    # Ввод интервала
+    # Time step input
     class Time_Step_Input(tk.Frame):
 
         def __init__(self, parent) -> None:
@@ -119,7 +118,7 @@ class GUI_elements(tk.Frame):
             self.dimension.grid(row=1, column=1)
 
 
-# Главный цикл
+# Main cycle
 if __name__ == "__main__":
     root = tk.Tk()
 
