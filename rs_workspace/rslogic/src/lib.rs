@@ -1,5 +1,5 @@
-use price_series;
-use rs_series;
+use price;
+use rs;
 use std::ffi::CString;
 use std::os::raw::c_char;
 
@@ -10,7 +10,7 @@ pub extern "C" fn get_price(
     date: *const c_char,
     os: *const c_char,
 ) -> *mut c_char {
-    price_series::get_price_series(symbol, interval, date, os)
+    price::get_price_series(symbol, interval, date, os)
 }
 
 #[unsafe(no_mangle)]
@@ -29,5 +29,5 @@ pub extern "C" fn get_rs(
     min_window: *const c_char,
     n_iter: *const c_char,
 ) -> *mut c_char {
-    rs_series::get_rs_series(os, min_window, n_iter)
+    rs::get_rs_series(os, min_window, n_iter)
 }

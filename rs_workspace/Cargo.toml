@@ -1,3 +1,3 @@
 [workspace]
 resolver = "3"
-members = ["rslogic", "price_series", "rs_series", "common"]
+members = ["rslogic", "price", "rs", "common", "precision"]
