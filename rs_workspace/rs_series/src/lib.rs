@@ -40,10 +40,10 @@ fn write_data(json_data: serde_json::Value, path: String) -> Result<(), String> 
     Ok(())
 }
 
-fn rs_analysis(series: &[f64], min_window: usize) -> (Vec<usize>, Vec<f64>) {
+fn rs_analysis(series: &[f64], min_window: usize, n_iter: usize) -> (Vec<usize>, Vec<f64>) {
     let n = series.len();
     let max_window = n / 2;
-    let num_points = 20;
+    let num_points = n_iter;
     let log_min = (min_window as f64).log10();
     let log_max = (max_window as f64).log10();
 
@@ -98,13 +98,23 @@ fn rs_analysis(series: &[f64], min_window: usize) -> (Vec<usize>, Vec<f64>) {
     (window_sizes, rs_values)
 }
 
-pub fn get_rs_series(os: *const c_char, min_window: *const c_char) -> *mut c_char {
+pub fn get_rs_series(
+    os: *const c_char,
+    min_window: *const c_char,
+    n_iter: *const c_char,
+) -> *mut c_char {
     let os = unsafe { CStr::from_ptr(os).to_string_lossy().into_owned() };
     let min_window = unsafe { CStr::from_ptr(min_window).to_string_lossy().into_owned() };
+    let n_iter = unsafe { CStr::from_ptr(n_iter).to_string_lossy().into_owned() };
 
     let min_window = match min_window.parse::<usize>() {
         Ok(w) => w,
         Err(e) => return rust_string_to_c(format!("Error: parsing min_window: {}", e).as_str()),
+    };
+
+    let n_iter = match n_iter.parse::<usize>() {
+        Ok(n) => n,
+        Err(e) => return rust_string_to_c(format!("Error: parsing n_iter: {}", e).as_str()),
     };
 
     let path = match os.as_str() {
@@ -130,7 +140,7 @@ pub fn get_rs_series(os: *const c_char, min_window: *const c_char) -> *mut c_cha
         return rust_string_to_c("Error: empty data series");
     }
 
-    let (window_sizes, rs_series) = rs_analysis(&series, min_window);
+    let (window_sizes, rs_series) = rs_analysis(&series, min_window, n_iter);
 
     let log_window_sizes: Vec<f64> = window_sizes.iter().map(|&w| (w as f64).log10()).collect();
 

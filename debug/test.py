@@ -9,6 +9,7 @@ interval = "1h".encode('utf-8')
 date = "2025-03-01T00:00:00Z".encode('utf-8')
 os = platform.system().encode('utf-8')
 min_window = "10".encode('utf-8')
+n_iter = "20".encode('utf-8')
 
 """
     Detecting of the operation system
@@ -46,7 +47,7 @@ rust_lib.free_heap(result_price_ptr)
     RS-analysis proccesing and deleting of messege after the output to the screen
 """
 
-result_rs_ptr = rust_lib.get_rs(os, min_window, None)
+result_rs_ptr = rust_lib.get_rs(os, min_window, n_iter)
 result_rs = ctypes.string_at(result_rs_ptr).decode("utf-8")
 print(result_rs)
 rust_lib.free_heap(result_rs_ptr)

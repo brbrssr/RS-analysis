@@ -24,6 +24,10 @@ pub extern "C" fn free_heap(s: *mut c_char) {
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn get_rs(os: *const c_char, min_window: *const c_char) -> *mut c_char {
-    rs_series::get_rs_series(os, min_window)
+pub extern "C" fn get_rs(
+    os: *const c_char,
+    min_window: *const c_char,
+    n_iter: *const c_char,
+) -> *mut c_char {
+    rs_series::get_rs_series(os, min_window, n_iter)
 }
