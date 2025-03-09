@@ -1,10 +1,9 @@
-use common::{file_clean, rust_string_to_c};
+use common::{file_clean, rust_string_to_c, write_data};
 use serde::Serialize;
 use serde_json::json;
 use std::f64;
 use std::ffi::CStr;
 use std::fs;
-use std::io::Write;
 use std::os::raw::c_char;
 
 #[derive(Serialize)]
@@ -24,20 +23,6 @@ fn linear_regression(x: &[f64], y: &[f64]) -> (f64, f64) {
     let intercept = sum_y / n - slope * (sum_x / n);
 
     (slope, intercept)
-}
-
-fn write_data(json_data: serde_json::Value, path: String) -> Result<(), String> {
-    let json_string = serde_json::to_string_pretty(&json_data)
-        .map_err(|e| format!("Error: failed to serialize JSON: {}", e))?;
-    let mut file = fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&path)
-        .map_err(|e| format!("Error: failed to open file: {}", e))?;
-
-    writeln!(file, "{}", json_string).map_err(|e| format!("Error: failed to write data: {}", e))?;
-
-    Ok(())
 }
 
 fn rs_analysis(series: &[f64], min_window: usize, n_iter: usize) -> (Vec<usize>, Vec<f64>) {

@@ -1,11 +1,9 @@
 use chrono::Utc;
-use common::{file_clean, rust_string_to_c};
+use common::{file_clean, rust_string_to_c, write_data};
 use reqwest;
 use serde::Serialize;
 use serde_json::{Value, json};
 use std::ffi::CStr;
-use std::fs::OpenOptions;
-use std::io::Write;
 use std::os::raw::c_char;
 use tokio;
 
@@ -155,15 +153,8 @@ async fn load_price_series(
     };
 
     let json_data = json!(filter_data);
-    let json_string = serde_json::to_string_pretty(&json_data)
-        .map_err(|e| format!("Error: failed to serialize JSON: {}", e))?;
-
-    let mut file = OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&path)
-        .map_err(|e| format!("Error: failed to open file: {}", e))?;
-
-    writeln!(file, "{}", json_string).map_err(|e| format!("Error: failed to write data: {}", e))?;
-    Ok(())
+    match write_data(json_data, path) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(format!("Error: failed to write data: {}", e)),
+    }
 }
