@@ -158,5 +158,5 @@ pub fn get_rs_series(
         Err(e) => return rust_string_to_c(format!("Error: writing data: {}", e).as_str()),
     }
 
-    rust_string_to_c(format!("{:.3}H,{:.3}C", hurst_exponent, _intercept).as_str())
+    rust_string_to_c(format!("{:.3}H{:.3}C", hurst_exponent, _intercept).as_str())
 }

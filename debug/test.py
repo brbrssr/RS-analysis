@@ -5,11 +5,11 @@ import platform
     Global parameters
 """
 pair = "BTCUSDT".encode('utf-8')
-interval = "1h".encode('utf-8')
-date = "2025-03-01T00:00:00Z".encode('utf-8')
+interval = "15m".encode('utf-8')
+date = "2024-03-10T00:00:00Z".encode('utf-8')
 os = platform.system().encode('utf-8')
 min_window = "10".encode('utf-8')
-n_iter = "20".encode('utf-8')
+n_iter = "1000".encode('utf-8')
 
 """
     Detecting of the operation system
