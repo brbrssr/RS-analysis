@@ -1,12 +1,14 @@
 import ctypes
 import platform
+import time
+
 
 """
     Global parameters
 """
 pair = "BTCUSDT".encode('utf-8')
-interval = "15m".encode('utf-8')
-date = "2024-03-10T00:00:00Z".encode('utf-8')
+interval = "1h".encode('utf-8')
+date = "2018-01-01T00:00:00Z".encode('utf-8')
 os = platform.system().encode('utf-8')
 min_window = "10".encode('utf-8')
 n_iter = "1000".encode('utf-8')
@@ -34,7 +36,7 @@ rust_lib.get_rs.restype = ctypes.POINTER(ctypes.c_char)
 
 rust_lib.free_heap.argtypes = [ctypes.POINTER(ctypes.c_char)] # Clean heap function, deleting the allocated memory for error or success messages
 rust_lib.free_heap.restype = None
-
+start_time = time.time()
 """
     Calling of time series download function, and deleting of message after processing
 """
@@ -51,3 +53,4 @@ result_rs_ptr = rust_lib.get_rs(os, min_window, n_iter)
 result_rs = ctypes.string_at(result_rs_ptr).decode("utf-8")
 print(result_rs)
 rust_lib.free_heap(result_rs_ptr)
+print("Working time: ", time.time() - start_time)
