@@ -8,7 +8,7 @@ class App(tk.Tk):
         super().__init__()
 
         self.title("RS Analysis")
-        self.geometry("360x480")
+        self.geometry("360x640")
         #self.resizable(False, False)
 
         icon = tk.PhotoImage(file="./rsapp/gui_assets/rs_anal_icon.png")
