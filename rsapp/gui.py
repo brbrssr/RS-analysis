@@ -59,19 +59,19 @@ class GUI_elements(tk.Frame):
             self.date_label = tk.Label(self, text="Date", font=("Calibri", 10, "bold"))
             self.date_label.grid(row=0, column=0, columnspan=5)
 
-            self.day = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.day)
+            self.day = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.SubmitForm.day)
             self.day.grid(row=1, column=0)
 
             self.sl_div1 = tk.Label(self, text="/", font=("Calibri", 10))
             self.sl_div1.grid(row=1, column=1)
 
-            self.month = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.month)
+            self.month = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.SubmitForm.month)
             self.month.grid(row=1, column=2)
 
             self.sl_div2 = tk.Label(self, text="/", font=("Calibri", 10))
             self.sl_div2.grid(row=1, column=3)
 
-            self.year = tk.Entry(self, font=("Calibri", 10), width=8, textvariable=comms.year)
+            self.year = tk.Entry(self, font=("Calibri", 10), width=8, textvariable=comms.SubmitForm.year)
             self.year.grid(row=1, column=4)
     
 
@@ -84,19 +84,19 @@ class GUI_elements(tk.Frame):
             self.time_label = tk.Label(self, text="Time", font=("Calibri", 10, "bold"))
             self.time_label.grid(row=0, column=0, columnspan = 5)
 
-            self.hour = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.hour)
+            self.hour = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.SubmitForm.hour)
             self.hour.grid(row=1, column=0)
 
             self.col_div1 = tk.Label(self, text=":", font=("Calibri", 10))
             self.col_div1.grid(row=1, column=1)
 
-            self.minute = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.minute)
+            self.minute = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.SubmitForm.minute)
             self.minute.grid(row=1, column=2)
 
             self.col_div2 = tk.Label(self, text=":", font=("Calibri", 10))
             self.col_div2.grid(row=1, column=3)
 
-            self.second = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.second)
+            self.second = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.SubmitForm.second)
             self.second.grid(row=1, column=4)
 
 
@@ -109,7 +109,7 @@ class GUI_elements(tk.Frame):
             self.trade_pair_label = tk.Label(self, text="Trade Pair", font=("Calibri", 10, "bold"))
             self.trade_pair_label.grid(row=0, column=0, columnspan=5)
 
-            self.trade_pair = tk.Entry(self, font=("Calibri", 10), width=32, textvariable=comms.trade_pair)
+            self.trade_pair = tk.Entry(self, font=("Calibri", 10), width=32, textvariable=comms.SubmitForm.trade_pair)
             self.trade_pair.grid(row=1, column=0)
     
 
@@ -122,10 +122,10 @@ class GUI_elements(tk.Frame):
             self.time_step_label = tk.Label(self, text="Time Step", font=("Calibri", 10, "bold"))
             self.time_step_label.grid(row=0, column=0, columnspan=5)
 
-            self.value = tk.Entry(self, font=("Calibri", 10), width=10, textvariable=comms.duration)
+            self.value = tk.Entry(self, font=("Calibri", 10), width=10, textvariable=comms.SubmitForm.duration)
             self.value.grid(row=1, column=0)
 
-            self.dimension = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.units)
+            self.dimension = tk.Entry(self, font=("Calibri", 10), width=5, textvariable=comms.SubmitForm.units)
             self.dimension.grid(row=1, column=1)
     
 
@@ -154,7 +154,7 @@ class GUI_elements(tk.Frame):
         def __init__(self, parent) -> None:
             super().__init__(parent)
 
-            self.submit_button = tk.Button(self, text="Submit", command=comms.sumbit_form)
+            self.submit_button = tk.Button(self, text="Submit", command=comms.SubmitForm.submit_form)
             self.submit_button.grid(row=0, column=0, columnspan=5)
 
 
