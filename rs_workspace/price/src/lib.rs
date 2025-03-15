@@ -1,5 +1,5 @@
 use chrono::Utc;
-use common::{file_clean, rust_string_to_c, write_data};
+use common::{file_clean, rust_string_to_c, write_data,get_os};
 use reqwest;
 use serde::Serialize;
 use serde_json::{Value, json};
@@ -16,22 +16,19 @@ pub fn get_price_series(
     pair: *const c_char,
     interval: *const c_char,
     date: *const c_char,
-    os: *const c_char,
 ) -> *mut c_char {
     let symbol = unsafe { CStr::from_ptr(pair).to_string_lossy().into_owned() };
     let interval_str = unsafe { CStr::from_ptr(interval).to_string_lossy().into_owned() };
     let date_str = unsafe { CStr::from_ptr(date).to_string_lossy().into_owned() };
-    let os_str = unsafe { CStr::from_ptr(os).to_string_lossy().into_owned() };
 
     let start_time = match chrono::DateTime::parse_from_rfc3339(&date_str) {
         Ok(dt) => dt.timestamp_millis(),
         Err(e) => return rust_string_to_c(format!("Error: invalid date format: {}", e).as_str()),
     };
 
-    let path = match os_str.as_str() {
-        "Windows" => ".\\data\\price_series.json".to_string(),
-        "Linux" => "./data/price_series.json".to_string(),
-        _ => return rust_string_to_c("Error: unsupported operating system"),
+    let path: String = match get_os("price_series.json") {
+        Ok(p) => p,
+        Err(e) => return rust_string_to_c(e.as_str()),
     };
 
     let (num_str, unit) = interval_str.split_at(interval_str.len() - 1);

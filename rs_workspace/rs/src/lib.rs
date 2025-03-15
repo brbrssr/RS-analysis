@@ -1,4 +1,4 @@
-use common::{file_clean, rust_string_to_c, write_data};
+use common::{file_clean, rust_string_to_c, write_data,get_os};
 use serde::Serialize;
 use serde_json::json;
 use std::f64;
@@ -84,11 +84,9 @@ fn rs_analysis(series: &[f64], min_window: usize, n_iter: usize) -> (Vec<usize>,
 }
 
 pub fn get_rs_series(
-    os: *const c_char,
     min_window: *const c_char,
     n_iter: *const c_char,
 ) -> *mut c_char {
-    let os = unsafe { CStr::from_ptr(os).to_string_lossy().into_owned() };
     let min_window = unsafe { CStr::from_ptr(min_window).to_string_lossy().into_owned() };
     let n_iter = unsafe { CStr::from_ptr(n_iter).to_string_lossy().into_owned() };
 
@@ -102,10 +100,9 @@ pub fn get_rs_series(
         Err(e) => return rust_string_to_c(format!("Error: parsing n_iter: {}", e).as_str()),
     };
 
-    let path = match os.as_str() {
-        "Windows" => ".\\data\\price_series.json".to_string(),
-        "Linux" => "./data/price_series.json".to_string(),
-        _ => return rust_string_to_c("Error: incorrect operating system"),
+    let path = match get_os("price_series.json") {
+        Ok(p) => p,
+        Err(e) => return rust_string_to_c(e.as_str()),
     };
 
     let json_data = match fs::read_to_string(path) {
@@ -134,10 +131,9 @@ pub fn get_rs_series(
     let (slope, _intercept) = linear_regression(&log_window_sizes, &log_rs_series);
     let hurst_exponent = slope;
 
-    let path = match os.as_str() {
-        "Windows" => ".\\data\\rs_series.json".to_string(),
-        "Linux" => "./data/rs_series.json".to_string(),
-        _ => return rust_string_to_c("Error: incorrect operating system"),
+    let path = match get_os("rs_series.json") {
+        Ok(p) => p,
+        Err(e) => return rust_string_to_c(e.as_str()),
     };
 
     let glued_data: Vec<RsSeries> = window_sizes

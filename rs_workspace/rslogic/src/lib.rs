@@ -8,9 +8,8 @@ pub extern "C" fn get_price(
     symbol: *const c_char,
     interval: *const c_char,
     date: *const c_char,
-    os: *const c_char,
 ) -> *mut c_char {
-    price::get_price_series(symbol, interval, date, os)
+    price::get_price_series(symbol, interval, date)
 }
 
 #[unsafe(no_mangle)]
@@ -25,9 +24,8 @@ pub extern "C" fn free_heap(s: *mut c_char) {
 
 #[unsafe(no_mangle)]
 pub extern "C" fn get_rs(
-    os: *const c_char,
     min_window: *const c_char,
     n_iter: *const c_char,
 ) -> *mut c_char {
-    rs::get_rs_series(os, min_window, n_iter)
+    rs::get_rs_series(min_window, n_iter)
 }

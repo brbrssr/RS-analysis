@@ -4,6 +4,7 @@ use std::fs;
 use std::fs::File;
 use std::io::{self, Write};
 use std::os::raw::c_char;
+use std::env::consts::OS;
 
 pub fn file_clean(path: String) -> io::Result<()> {
     let mut file = File::create(path)?;
@@ -40,4 +41,13 @@ pub fn write_data(json_data: Value, path: String) -> Result<(), String> {
     fs::write(path, json_string).map_err(|e| format!("Ошибка при записи в файл: {}", e))?;
 
     Ok(())
+}
+
+pub fn get_os(filename: &str) -> Result<String, String>{
+    let path: String = match OS { 
+        "windows" => format!(".\\data\\{}", filename).to_string(),
+        "linux" => format!("./data/{}", filename).to_string(),
+        _ => return Err("Error: pathfinding".to_string()),
+    };
+    Ok(path)
 }
