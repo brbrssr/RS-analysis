@@ -51,3 +51,13 @@ pub fn get_os(filename: &str) -> Result<String, String>{
     };
     Ok(path)
 }
+
+pub fn mean_squared_error(y_real: &[f64], y_pred: &[f64]) -> f64 {
+    let n = y_real.len() as f64;
+    let mse: f64 = y_real.iter()
+    .zip(y_pred.iter())
+    .map(|(real, pred)| (real - pred).powi(2))
+    .sum();
+     
+     mse / n
+}

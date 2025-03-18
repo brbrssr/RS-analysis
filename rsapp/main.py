@@ -1,5 +1,5 @@
 import tkinter as tk
-import rsapp.gui as gui
+import gui as gui
 
 
 class App(tk.Tk):
@@ -11,7 +11,7 @@ class App(tk.Tk):
         self.geometry("360x640")
         #self.resizable(False, False)
 
-        icon = tk.PhotoImage(file="./rsapp/gui_assets/rs_anal_icon.png")
+        icon = tk.PhotoImage(file="./gui_assets/rs_anal_icon.png")
         self.iconphoto(True, icon)
 
         self.gui = gui.GUI_elements(self).pack()

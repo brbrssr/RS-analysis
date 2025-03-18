@@ -154,7 +154,7 @@ class GUI_elements(tk.Frame):
         def __init__(self, parent) -> None:
             super().__init__(parent)
 
-            self.submit_button = tk.Button(self, text="Submit", command=comms.sumbit_form)
+            self.submit_button = tk.Button(self, text="Submit", command=comms.submit_form)
             self.submit_button.grid(row=0, column=0, columnspan=5)
 
 
