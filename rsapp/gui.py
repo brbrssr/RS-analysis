@@ -12,7 +12,7 @@ class GUI_elements(tk.Frame):
         super().__init__(parent)
 
         # Title creation
-        self.title_frame = self.Title(self)
+        self.title_frame = self.Title(self)j
         self.title_frame.pack(pady=10)
 
         # Date input widget creation
