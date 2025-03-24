@@ -11,7 +11,8 @@ class App(tk.Tk):
         self.geometry("360x640")
         #self.resizable(False, False)
 
-        self.gui = gui.GUI_elements(self).pack()
+        self.gui = gui.GUI_elements(self)
+        self.gui.pack()
 
     
     def set_icon(self):
