@@ -1,25 +1,18 @@
-import tkinter as tk
+import flet as fl
 import gui as gui
 
 
-class App(tk.Tk):
-
-    def __init__(self) -> None:
+class App(fl.UserControl):
+    def __inti__(self):
         super().__init__()
-
-        self.title("RS Analysis")
-        self.geometry("360x640")
-        #self.resizable(False, False)
-
-        self.gui = gui.GUI_elements(self)
-        self.gui.pack()
-
-    
-    def set_icon(self):
-        self.icon = tk.PhotoImage(file="./gui_assets/rs_anal_icon.png")
-        self.iconphoto(True, self.icon)
+        
+    def build(self):
+        return 
 
 
-if __name__ == "__main__":
+def main(page: fl.Page):
+    page.title = "RS-analysis"
     app = App()
-    app.mainloop()
+    page.add(app)
+
+fl.app(target=main)
