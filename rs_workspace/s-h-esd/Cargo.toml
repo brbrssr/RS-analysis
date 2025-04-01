@@ -1,0 +1,8 @@
+[package]
+name = "s-h-esd"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+statrs = "0.18.0"
+common = { path = "../common" }

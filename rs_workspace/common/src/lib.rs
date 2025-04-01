@@ -6,6 +6,15 @@ use std::io::{self, Write};
 use std::os::raw::c_char;
 use std::env::consts::OS;
 
+/*
+    Global public values
+ */
+pub const PHI: f64 = (1.0 + 5.0f64.sqrt()) / 2.0;
+
+/*
+    Function for file and memory
+ */
+
 pub fn file_clean(path: String) -> io::Result<()> {
     let mut file = File::create(path)?;
 
@@ -52,6 +61,10 @@ pub fn get_os(filename: &str) -> Result<String, String>{
     Ok(path)
 }
 
+/*
+    Mathematical functions
+ */
+
 pub fn mean_squared_error(y_real: &[f64], y_pred: &[f64]) -> f64 {
     let n = y_real.len() as f64;
     let mse: f64 = y_real.iter()
@@ -60,4 +73,28 @@ pub fn mean_squared_error(y_real: &[f64], y_pred: &[f64]) -> f64 {
     .sum();
      
      mse / n
+}
+
+pub fn mean(x: &[f64]) -> f64 {
+    let sum: f64 = x.iter().sum();
+    sum / x.len() as f64
+}
+
+pub fn std_dev(x: &[f64]) -> f64 {
+    let mean_value = mean(x);
+    let variance: f64 = x.iter()
+        .map(|&xi| (xi - mean_value).powi(2))
+        .sum::<f64>() / x.len() as f64;
+    variance.sqrt()
+}
+
+pub fn median(x: &[f64]) -> f64 {
+    let mut temp = x.to_vec();
+    temp.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    let n = temp.len();
+    if n % 2 == 0 {
+        (temp[n / 2 - 1] + temp[n / 2]) / 2.0
+    } else {
+        temp[n / 2]
+    }
 }
