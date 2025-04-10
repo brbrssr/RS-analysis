@@ -1,11 +1,13 @@
 import flet as ft
 import date_picker
 import time_picker
+import trade_pair_input
 
 
 def main(page: ft.Page):
     result_date = ft.Text() # Text fields. Just for debug
     result_time = ft.Text()
+    result_trade_pair = ft.Text()
     
 
     def on_date_change(date_picker):
@@ -26,6 +28,16 @@ def main(page: ft.Page):
     timePicker = time_picker.TimePicker(on_change=on_time_change)
 
     page.add(timePicker.render(), result_time)
+
+
+    def on_trade_pair_change(trade_pair_input):
+        trade_pair = trade_pair_input.get_trade_pair()
+        result_trade_pair.value = f"Trade Pair: {trade_pair}" if trade_pair else "Trade Pair not selected"
+        page.update()
+
+    tradePair = trade_pair_input.TradePairInput(on_change=on_trade_pair_change)
+
+    page.add(tradePair.render(), result_trade_pair)
 
 
 ft.app(main)
