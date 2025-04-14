@@ -1,5 +1,6 @@
 import flet as ft
 
+
 class IntervalPicker:
     # IntervalPicker class constructor
     def __init__(self, on_change=None):
@@ -8,7 +9,7 @@ class IntervalPicker:
 
         self.amount_tf = ft.TextField(label="Amount", width=150)
         self.unit_dd = ft.Dropdown(label="Units", width=150, 
-                                   options=[])
+                                   options=[ft.dropdown.Option(text=u, key=u) for u in ['s', 'm', 'h', 'w', 'mo', 'y']])
 
         self.controls = ft.Row([self.amount_tf, self.unit_dd])
     
@@ -23,8 +24,8 @@ class IntervalPicker:
 
     def get_interval(self):
         if self.amount_tf.value and self.unit_dd.value:
-            return f"{self.amount_tf.value}:{self.unit_dd.value}"
-        return None
+            return f"{self.amount_tf.value} {self.unit_dd.value}"
+        return ""
     
 
     def render(self):
