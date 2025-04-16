@@ -1,6 +1,7 @@
 use std::f64;
 use statrs::distribution::{StudentsT, ContinuousCDF};
 use common::{mean,std_dev,median};
+
 fn t_ppf(prob: f64, df: f64) -> f64 {
     let t_dist = StudentsT::new(0.0, 1.0, df).unwrap();
     t_dist.inverse_cdf(prob)

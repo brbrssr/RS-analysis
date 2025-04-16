@@ -1,26 +1,29 @@
 import ctypes
-import platform
-import time
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from scipy.stats import boxcox
-from arch import arch_model
 import json
+import numpy as np
+from math import log
+from pathlib import Path
+import matplotlib.pyplot as plt
+import time
 
 """
     Global parameters
 """
 pair = "BTCUSDT".encode('utf-8')
 interval = "1h".encode('utf-8')
-date = "2024-01-01T00:00:00Z".encode('utf-8')
+date = "2020-01-01T00:00:00Z".encode('utf-8')
 min_window = "10".encode('utf-8')
 n_iter = "1000".encode('utf-8')
+freq = "7".encode('utf-8')
+alpha = "0.95".encode('utf-8')
+ub = "0.499".encode('utf-8')
+hybrid = "true".encode('utf-8')
+max_iters = "100".encode('utf-8')
 
 """
     Detecting of the operation system
 """
-rust_lib = ctypes.CDLL("./rslogic.dll") #It is necessary to define the OS 
+rust_lib = ctypes.CDLL(".\\rslogic.dll") #It is necessary to define the OS
 
 """
     Adding the rules of communication with the rust library for each function separately.
@@ -33,108 +36,119 @@ rust_lib.get_price.restype = ctypes.POINTER(ctypes.c_char)
 rust_lib.get_rs.argtypes = [ctypes.c_char_p,ctypes.c_char_p] # RS-analysis function
 rust_lib.get_rs.restype = ctypes.POINTER(ctypes.c_char)
 
+rust_lib.test.argtypes = [ctypes.c_char_p,ctypes.c_char_p,ctypes.c_char_p,ctypes.c_char_p,ctypes.c_char_p]
+rust_lib.test.restype = ctypes.POINTER(ctypes.c_char)
+
 rust_lib.free_heap.argtypes = [ctypes.POINTER(ctypes.c_char)] # Clean heap function, deleting the allocated memory for error or success messages
 rust_lib.free_heap.restype = None
-start_time = time.time()
+
+"""
+    Table of params
+"""
+def print_parameter_table(params):
+    """Печатает параметры в виде красивой таблицы."""
+    max_key_len = max(len(k) for k in params)
+    print("+" + "-" * (max_key_len + 2) + "+" + "-" * 22 + "+")
+    print(f"| {'Parameter'.ljust(max_key_len)} | Value".ljust(22) + " |")
+    print("+" + "-" * (max_key_len + 2) + "+" + "-" * 22 + "+")
+    for key, value in params.items():
+        decoded_value = value.decode('utf-8') if isinstance(value, bytes) else str(value)
+        print(f"| {key.ljust(max_key_len)} | {decoded_value.ljust(20)} |")
+    print("+" + "-" * (max_key_len + 2) + "+" + "-" * 22 + "+")
+
+# Параметры
+params = {
+    "pair": pair,
+    "interval": interval,
+    "date": date,
+    "min_window": min_window,
+    "n_iter": n_iter,
+    "freq": freq,
+    "alpha": alpha,
+    "ub": ub,
+    "hybrid": hybrid,
+    "max_iters": max_iters
+}
+
+# Вывод
+print_parameter_table(params)
 """
     Calling of time series download function, and deleting of message after processing
 """
+start_time = time.time()
 result_price_ptr = rust_lib.get_price(pair, interval, date)
 result_price = ctypes.string_at(result_price_ptr).decode("utf-8")
 print(result_price)
 rust_lib.free_heap(result_price_ptr)
-
+print("Time of process[Load series]: ", time.time() - start_time, "sec\n")
 """
     RS-analysis proccesing and deleting of messege after the output to the screen
 """
-
+start_time = time.time()
 result_rs_ptr = rust_lib.get_rs( min_window, n_iter)
 result_rs = ctypes.string_at(result_rs_ptr).decode("utf-8")
 print(result_rs)
 rust_lib.free_heap(result_rs_ptr)
-print("Working time: ", time.time() - start_time)
-
-# ================================
-#   Variance normalize
-# ================================
-
-CONFIG = {
-    "filename": ".\\data\\price_series.json",
-    "apply_trend_diff": True,
-    "apply_seasonal_diff": True,
-    "seasonal_period": 7,
-    "use_boxcox": True,
-    "boxcox_shift": None,
-    "use_garch": True,
-    "garch_p": 1,
-    "garch_q": 1,
-}
-
-def load_data(filename):
-    with open(filename, "r") as f:
+print("Time of process[RS-analysis]: ", time.time() - start_time, "sec\n")
+"""
+    Test: Box_Cox
+"""
+start_time = time.time()
+result_test_ptr = rust_lib.test(freq,alpha,ub,hybrid,max_iters)
+result_test = ctypes.string_at(result_test_ptr).decode("utf-8")
+print(result_test)
+rust_lib.free_heap(result_test_ptr)
+print("Time of process[Box-Cox + Z score]: ", time.time() - start_time, "sec\n")
+"""
+    Visualize 
+"""
+def load_price_data(filepath):
+    """Загружает JSON с ценами из файла."""
+    with open(filepath, 'r', encoding='utf-8') as f:
         data = json.load(f)
     return [entry["price"] for entry in data]
 
-def preprocess_data(prices, config):
-    prices_series = pd.Series(prices)
-    if config["apply_trend_diff"]:
-        prices_diff = prices_series.diff().dropna()
-    else:
-        prices_diff = prices_series.copy()
-    if config["apply_seasonal_diff"]:
-        seasonal_diff = prices_diff.diff(config["seasonal_period"]).dropna()
-    else:
-        seasonal_diff = prices_diff.copy()
-    if config["use_boxcox"]:
-        if config["boxcox_shift"] is None:
-            shift = abs(seasonal_diff.min()) + 1e-6
-        else:
-            shift = config["boxcox_shift"]
-        prices_shifted = seasonal_diff + shift
-        prices_boxcox, lmbda = boxcox(prices_shifted)
-    else:
-        prices_boxcox = seasonal_diff.copy()
-        lmbda = None
-    if config["use_garch"]:
-        model = arch_model(prices_boxcox, vol="Garch", p=config["garch_p"], q=config["garch_q"])
-        res = model.fit(disp="off")
-        garch_volatility = res.conditional_volatility
-    else:
-        garch_volatility = None
-    normalized = (prices_boxcox - np.mean(prices_boxcox)) / np.std(prices_boxcox)
-    # normalized = prices_boxcox
-    return prices_series, normalized, garch_volatility, lmbda
 
-def plot_series(original, normalized, garch_volatility):
-    plt.figure(figsize=(12, 10))
-    plt.subplot(3, 1, 1)
-    plt.plot(original, label="Оригинальный ряд", color="blue")
-    plt.title("Оригинальный временной ряд")
-    plt.xlabel("Время")
-    plt.ylabel("Цена")
+import json
+
+
+def variance(data):
+    if len(data) == 0:
+        raise ValueError("Массив пуст")
+
+    mean = sum(data) / len(data)
+    return sum((x - mean) ** 2 for x in data) / len(data)
+
+
+def load_float_series(filepath):
+    """Загружает список чисел из JSON-файла."""
+    with open(filepath, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    if not isinstance(data, list) or not all(isinstance(x, (int, float)) for x in data):
+        raise ValueError("file could contain (float).")
+
+    return data
+
+
+def plot_price_series(original_path, transformed_path):
+    """Строит графики оригинального и трансформированного рядов."""
+    original = load_price_data(original_path)
+    transformed = load_float_series(transformed_path)
+
+    print("Variance: ",variance(transformed))
+
+    plt.figure(figsize=(12, 6))
+
+    plt.plot(original, label='Original series', color='blue', linewidth=2)
+    plt.plot(transformed, label='transformed series', color='green', linestyle='--', linewidth=2)
+
+    plt.title("PLot")
+    plt.xlabel("Index")
+    plt.ylabel("Cost")
     plt.legend()
-    plt.grid()
-    plt.subplot(3, 1, 2)
-    plt.plot(normalized, label="Нормализованный (Box-Cox + Z-score)", color="red")
-    plt.title("Нормализованный ряд")
-    plt.xlabel("Время")
-    plt.ylabel("Значение")
-    plt.legend()
-    plt.grid()
-    if garch_volatility is not None:
-        plt.subplot(3, 1, 3)
-        plt.plot(garch_volatility, label="GARCH волатильность", color="green")
-        plt.title("GARCH волатильность")
-        plt.xlabel("Время")
-        plt.ylabel("Волатильность")
-        plt.legend()
-        plt.grid()
+    plt.grid(True)
     plt.tight_layout()
     plt.show()
 
-if __name__ == "__main__":
-    prices = load_data(CONFIG["filename"])
-    original, normalized, garch_volatility, lmbda = preprocess_data(prices, CONFIG)
-    if lmbda is not None:
-        print(f"Оптимальный параметр λ для Box-Cox: {lmbda}")
-    plot_series(original, normalized, garch_volatility)
+plot_price_series(".\\data\\price_series.json", ".\\data\\test.json")

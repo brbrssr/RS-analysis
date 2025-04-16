@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 price = { path = "../price" }
 rs = { path = "../rs" }
+arfima = {path = "../arfima"}
 
 [lib]
 crate-type = ["cdylib"]

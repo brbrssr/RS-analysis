@@ -7,11 +7,6 @@ use std::os::raw::c_char;
 use std::env::consts::OS;
 
 /*
-    Global public values
- */
-pub const PHI: f64 = (1.0 + 5.0f64.sqrt()) / 2.0;
-
-/*
     Function for file and memory
  */
 
