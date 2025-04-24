@@ -1,3 +1,4 @@
+from turtle import window_height, window_width
 import flet as ft
 import date_picker
 import time_picker
@@ -10,6 +11,13 @@ def main(page: ft.Page):
     result_time = ft.Text()
     result_trade_pair = ft.Text()
     result_interval = ft.Text()
+
+
+    page.title = "RS-analysis"
+
+    page.window.width = 640
+    page.window.height = 640
+    page.window.resizable = False
     
 
     def on_date_change(date_picker):
@@ -44,4 +52,4 @@ def main(page: ft.Page):
     page.add(intervalPicker.render(), result_interval)
 
 
-ft.app(main)
+ft.app(target=main)
