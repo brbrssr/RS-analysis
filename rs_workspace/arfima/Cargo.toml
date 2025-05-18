@@ -11,4 +11,3 @@ serde_json = "1.0"
 config-manager = {path = "../config-manager" }
 pacf-acf = {path = "../pacf-acf" }
 akaike-optim = {path = "../akaike-optim"}
-nalgebra = "0.33.2"
