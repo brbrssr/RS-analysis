@@ -1,0 +1,9 @@
+[package]
+name = "akaike-optim"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+argmin = { version = "0.10.0"}
+argmin-math = {version = "0.4.0", features = ["vec"]}
+pacf-acf = {path = "../pacf-acf"}

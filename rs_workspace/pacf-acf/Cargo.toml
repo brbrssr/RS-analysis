@@ -1,0 +1,9 @@
+[package]
+name = "pacf-acf"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+common = {path = "../common"}
+statrs = {version = "0.5.1"}
+
