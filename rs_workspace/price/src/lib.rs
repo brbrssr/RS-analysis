@@ -1,16 +1,10 @@
 use chrono::Utc;
 use common::{file_clean, rust_string_to_c, write_data,get_os};
 use reqwest;
-use serde::Serialize;
 use serde_json::{Value, json};
 use std::ffi::CStr;
 use std::os::raw::c_char;
 use tokio;
-
-#[derive(Serialize)]
-struct CandleData {
-    price: f64,
-}
 
 pub fn get_price_series(
     pair: *const c_char,
@@ -138,12 +132,12 @@ async fn load_price_series(
         .await
         .map_err(|e| format!("Error: failed parse JSON: {}", e))?;
 
-    let filter_data: Vec<CandleData> = match data.as_array() {
+    let filter_data: Vec<f64> = match data.as_array() {
         Some(array) => array
             .iter()
             .filter_map(|candle| {
                 let price = candle.get(4)?.as_str()?.parse::<f64>().ok()?;
-                Some(CandleData { price })
+                Some(price)
             })
             .collect(),
         None => return Err("Error: data isn't array".to_string()),

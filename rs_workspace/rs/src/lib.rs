@@ -5,6 +5,7 @@ use std::f64;
 use std::ffi::CStr;
 use std::fs;
 use std::os::raw::c_char;
+use config_manager::ConfigManager;
 
 #[derive(Serialize)]
 struct RsSeries {
@@ -110,12 +111,12 @@ pub fn get_rs_series(
         Err(e) => return rust_string_to_c(format!("Error: opening file: {}", e).as_str()),
     };
 
-    let series: Vec<f64> = match serde_json::from_str::<Vec<serde_json::Value>>(&json_data) {
-        Ok(value) => value
-            .iter()
-            .filter_map(|v| v.get("price")?.as_f64())
-            .collect(),
-        Err(e) => return rust_string_to_c(format!("Error: parsing JSON: {}", e).as_str()),
+    let series: Vec<f64> = match serde_json::from_str::<Vec<f64>>(&json_data) {
+        Ok(vec) => vec,
+        Err(e) => {
+            let msg = format!("Error parsing JSON in rs preparation: {}", e);
+            return rust_string_to_c(&msg);
+        }
     };
 
     if series.is_empty() {
@@ -130,6 +131,8 @@ pub fn get_rs_series(
 
     let (slope, _intercept) = linear_regression(&log_window_sizes, &log_rs_series);
     let hurst_exponent = slope;
+
+    let _ = ConfigManager::update_herst(&hurst_exponent.to_string());
 
     let path = match get_os("rs_series.json") {
         Ok(p) => p,

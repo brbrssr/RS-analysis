@@ -1,5 +1,6 @@
 use argmin::core::{CostFunction, Error, Executor};
 use argmin::solver::brent::BrentOpt;
+use common::{mean, variance};
 
 #[derive(Clone)]
 struct BoxCoxLikelihood {
@@ -51,7 +52,8 @@ impl CostFunction for BoxCoxLikelihood {
         Ok(result)
     }
 }
-pub fn box_cox_z_score(data: &[f64], max_iter: u64) -> Result<Vec<Vec<f64>>, Error> {
+
+pub fn box_cox(data: &[f64], max_iter: u64) -> Result<Vec<Vec<f64>>, Error> {
     let problem = BoxCoxLikelihood::new(data.to_vec());
     let problem_clone = problem.clone();
 
@@ -74,31 +76,38 @@ pub fn box_cox_z_score(data: &[f64], max_iter: u64) -> Result<Vec<Vec<f64>>, Err
     let best_param = match res.state.best_param {
         Some(param) => param,
         None => {
-            return Err(Error::msg("No best_param"));
+            return Err(Error::msg("No best param for box-cox"));
         }
     };
 
     let best_cost = res.state.best_cost;
 
-
     let transformed_data = problem.transform(best_param);
     
-
-    let mean = transformed_data.iter().sum::<f64>() / transformed_data.len() as f64;
-    let variance = transformed_data.iter()
-        .map(|&x| (x - mean).powi(2))
-        .sum::<f64>() / transformed_data.len() as f64;
-    let std_dev = variance.sqrt();
-
-
-    let z_scores: Vec<f64> = transformed_data.iter()
-        .map(|&x| (x - mean) / std_dev)
-        .collect();
-
-
     Ok(vec![
         vec![best_param, best_cost],
-        z_scores,
+        transformed_data,
     ])
+}
 
+pub fn z_score(data: &[f64]) -> Vec<f64> {
+    let mean = mean(data);
+    let std_dev = variance(data).sqrt();
+    let z_scores: Vec<f64> = data.iter()
+        .map(|&x| (x - mean) / std_dev)
+        .collect();
+    
+    z_scores
+
+}
+
+pub fn reverse_box_cox_z_score(z: &[f64], mu: f64, sigma: f64, lambda: f64) -> Vec<f64> {
+    z.iter().map(|&zi| {
+        let yi = zi * sigma + mu;
+        if lambda.abs() < 1e-12 {
+            yi.exp()
+        } else {
+            (lambda * yi + 1.0).powf(1.0 / lambda)
+        }
+    }).collect()
 }

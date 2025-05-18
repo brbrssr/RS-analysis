@@ -1,6 +1,6 @@
 use std::f64;
 use statrs::distribution::{StudentsT, ContinuousCDF};
-use common::{mean,std_dev,median};
+use common::{mean,variance,median};
 
 fn t_ppf(prob: f64, df: f64) -> f64 {
     let t_dist = StudentsT::new(0.0, 1.0, df).unwrap();
@@ -62,7 +62,7 @@ fn esd_test_statistics(x: &[f64], hybrid: Option<bool>) -> (f64, f64) {
     if hybrid {
         (median(x), mad(x))
     } else {
-        (mean(x), std_dev(x))
+        (mean(x), variance(x).sqrt())
     }
 }
 

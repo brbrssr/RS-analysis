@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 argmin = { version = "0.10.0" }
+common = {path = "../common"}
