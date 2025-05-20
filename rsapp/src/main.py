@@ -1,22 +1,22 @@
-from turtle import window_height, window_width
 import flet as ft
 import date_picker
 import time_picker
 import trade_pair_input
 import interval_picker
+import other_parameters
 
 
 def main(page: ft.Page):
-    result_date = ft.Text() # Text fields. Just for debug
+    result_date = ft.Text()             # Text fields. Just for debug
     result_time = ft.Text()
     result_trade_pair = ft.Text()
     result_interval = ft.Text()
-
+    result_other_parameters = ft.Text()
 
     page.title = "RS-analysis"
 
     page.window.width = 640
-    page.window.height = 640
+    page.window.height = 854
     page.window.resizable = False
     
 
@@ -52,4 +52,13 @@ def main(page: ft.Page):
     page.add(intervalPicker.render(), result_interval)
 
 
+    def on_other_parameters_change(other_params):
+        values = other_params.get_other_parameters()
+        result_other_parameters.value = f"Params: {values}"
+        page.update()
+    otherParams = other_parameters.OtherParameters(on_change=on_other_parameters_change)
+    page.add(otherParams.render(), result_other_parameters)
+
+
 ft.app(target=main)
+# ft.app(target=main, view=ft.WEB_BROWSER)

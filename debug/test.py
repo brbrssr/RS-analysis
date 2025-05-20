@@ -21,18 +21,18 @@ def inverse_z_score(z, mu, sigma):
 """
     Global parameters
 """
-pair = "BTCUSDT".encode('utf-8')
-interval = "1h".encode('utf-8')
-date = "2025-04-01T00:00:00Z".encode('utf-8')
-min_window = "50".encode('utf-8')
-n_iter = "1000".encode('utf-8')
-freq = "7".encode('utf-8')
-alpha = "0.95".encode('utf-8')
-ub = "0.499".encode('utf-8')
-hybrid = "true".encode('utf-8')
-max_iters = "100".encode('utf-8')
-nlags = "20".encode('utf-8')
-max_iters_grid = "50".encode('utf-8')
+pair = "BTCUSDT".encode('utf-8')                # defined by the user
+interval = "1h".encode('utf-8')                 # defined by the user
+date = "2025-04-01T00:00:00Z".encode('utf-8')   # defined by the user
+min_window = "50".encode('utf-8')               # predetermined
+n_iter = "1000".encode('utf-8')                 # configured separately
+freq = "7".encode('utf-8')                      # configured separately
+alpha = "0.95".encode('utf-8')                  # configured separately
+ub = "0.499".encode('utf-8')                    # configured separately
+hybrid = "true".encode('utf-8')                 # configured separately
+max_iters = "100".encode('utf-8')               # configured separately
+nlags = "20".encode('utf-8')                    # configured separately
+max_iters_grid = "50".encode('utf-8')           # configured separately
 
 """
     Detecting of the operation system
