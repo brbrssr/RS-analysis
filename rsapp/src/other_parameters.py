@@ -46,12 +46,14 @@ class OtherParameters:
                 if hasattr(control, "on_change"):
                     control.on_change = self._on_any_change
     
+    
     def toggle_panel(self, e):
         self.expanded = not self.expanded
         self.panel_content.visible = self.expanded
         self.toggle_button.text = "Other Parameters ▲" if self.expanded else "Other Parameters ▼"
         self.toggle_button.update()
         self.panel_content.update()
+
 
     def _on_any_change(self, e):
         if self.on_change_callback:
