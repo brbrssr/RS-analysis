@@ -214,4 +214,4 @@ def run_rs_anal(parameters):
         # Отображение графика
         plt.show()
 
-    visualize_time_series(loaded, preds, title="Time Series Visualization")
+    visualize_time_series(original, preds, title="Time Series Visualization")
