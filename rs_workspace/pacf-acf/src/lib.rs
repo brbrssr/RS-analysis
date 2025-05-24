@@ -40,13 +40,13 @@ pub fn durbin_yw(series: &[f64], nlags: usize) -> YwResult {
         }
         gamma[k] = sum / n as f64;
     }
-    
+
     let mut pacf = vec![0.0; nlags + 1];
     let mut phi = vec![vec![0.0; nlags + 1]; nlags + 1];
     let mut sigma2 = vec![0.0; nlags + 1];
     sigma2[0] = gamma[0];
     pacf[0] = 1.0;
-    
+
     for lag in 1..=nlags {
 
         let mut acc = 0.0;
@@ -56,11 +56,11 @@ pub fn durbin_yw(series: &[f64], nlags: usize) -> YwResult {
         let kappa = (gamma[lag] - acc) / sigma2[lag - 1];
         pacf[lag] = kappa;
         phi[lag][lag] = kappa;
-        
+
         for j in 1..lag {
             phi[lag][j] = phi[lag - 1][j] - kappa * phi[lag - 1][lag - j];
         }
-        
+
         sigma2[lag] = sigma2[lag - 1] * (1.0 - kappa * kappa);
     }
 
