@@ -8,22 +8,12 @@ from scipy.stats import boxcox, gaussian_kde
 import numpy as np
 
 
-def inverse_box_cox(y_transformed, lambda_):
-    if lambda_ == 0:
-        return np.exp(y_transformed)
-    else:
-        return (lambda_ * y_transformed + 1) ** (1 / lambda_)
-
-def inverse_z_score(z, mu, sigma):
-    return z * sigma + mu
-
-
 """
     Global parameters
 """
 pair = "BTCUSDT".encode('utf-8')                # defined by the user
 interval = "1h".encode('utf-8')                 # defined by the user
-date = "2025-04-01T00:00:00Z".encode('utf-8')   # defined by the user
+date = "2025-05-10T00:00:00Z".encode('utf-8')   # defined by the user
 min_window = "50".encode('utf-8')               # predetermined
 n_iter = "1000".encode('utf-8')                 # configured separately
 freq = "7".encode('utf-8')                      # configured separately
@@ -242,4 +232,4 @@ def visualize_time_series(originals, preds, title="Time Series Visualization"):
     # Отображение графика
     plt.show()
 
-visualize_time_series(loaded, preds, title="Time Series Visualization")
+visualize_time_series(original, preds, title="Time Series Visualization")

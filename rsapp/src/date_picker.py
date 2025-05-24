@@ -63,6 +63,11 @@ class DatePicker:
 
     def get_date(self):
         if self.day_dd.value and self.month_dd.value and self.year_dd.value:
+            less_than_10 = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+            if self.day_dd.value in less_than_10:
+                self.day_dd.value = "0" + self.day_dd.value
+            if self.month_dd.value in less_than_10:
+                self.month_dd.value = "0" + self.month_dd.value
             return f"{self.year_dd.value}-{self.month_dd.value}-{self.day_dd.value}"
         return None
     
