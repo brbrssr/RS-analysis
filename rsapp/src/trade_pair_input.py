@@ -21,7 +21,7 @@ class TradePairInput:
 
     def get_trade_pair(self):
         if self.trade_pair_tf.value:
-            return f"{self.trade_pair_tf.value}"
+            return f"{self.trade_pair_tf.value}".upper()
         return None
     
 
