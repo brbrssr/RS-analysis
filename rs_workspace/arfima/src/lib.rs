@@ -269,8 +269,7 @@ pub fn arfima(
         Err(e) => return rust_string_to_c(format!("Error: writing data: {}", e).as_str()),
     }
 
-    rust_string_to_c(format!("lambda: {}, cost: {}", lambda, cost).as_str());
-    rust_string_to_c("Where is my mind?")
+    rust_string_to_c(format!("lambda: {}, cost: {}", lambda, cost).as_str())
 }
 
 
