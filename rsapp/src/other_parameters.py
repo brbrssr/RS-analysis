@@ -12,18 +12,18 @@ class OtherParameters:
 
         self.fields = [
             ft.Row([
-                ft.TextField(label="Number of iterations", width=280),
-                ft.TextField(label="Frequency", width=280),
+                ft.TextField(label="Number of iterations", width=280, value="1000"),
+                ft.TextField(label="Frequency", width=280, value="7"),
             ]),
             ft.Row([
-                ft.TextField(label="Alpha", width=186),
-                ft.TextField(label="UB", width=186),
-                ft.Checkbox(label="Is Hybrid", width=187),
+                ft.TextField(label="Alpha", width=186, value="0.95"),
+                ft.TextField(label="UB", width=186, value="0.499"),
+                ft.Checkbox(label="Is Hybrid", width=187, value=True),
             ]),
             ft.Row([
-                ft.TextField(label="Max Iterations", width=186),
-                ft.TextField(label="Number of lags", width=186),
-                ft.TextField(label="Max Iterations Grid", width=187),
+                ft.TextField(label="Max Iterations", width=186, value="100"),
+                ft.TextField(label="Number of lags", width=186, value="20"),
+                ft.TextField(label="Max Iterations Grid", width=187, value="50"),
             ])
         ]
 

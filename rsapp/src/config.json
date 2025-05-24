@@ -1,0 +1,13 @@
+{
+  "symbol": "BTCUSD",
+  "interval": "1h",
+  "date": "2025-01-01T00:00:00Z",
+  "min_window": 20,
+  "m_iter": 100,
+  "freq": 1,
+  "alpha": 0.05,
+  "ub": 1.0,
+  "hybrid": false,
+  "max_iters": 1000000,
+  "herst": 1.013769824551197
+}
