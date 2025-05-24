@@ -64,7 +64,11 @@ def main(page: ft.Page):
 
 
     # Функция для обработки нажатия кнопки "Analyse"
+    loading_indicator = ft.ProgressBar(bar_height=100, color='blue', width=600, visible=False)
     def on_analyse_click(e):
+        loading_indicator.visible = True
+        page.update()
+
         date = datePicker.get_date()
         time = timePicker.get_time()
         trade_pair = tradePair.get_trade_pair()
@@ -88,6 +92,9 @@ def main(page: ft.Page):
         ]
         _packer.pack_n_send(date, time, trade_pair, interval, other_parameters_list)
 
+        loading_indicator.visible = False
+        page.update()
+
     # Callback для передачи параметров в lib_handler
     def on_packer_button_trigger(parameters):
         lib_handler.run_rs_anal(parameters)
@@ -95,7 +102,7 @@ def main(page: ft.Page):
     # Создаем Packer и переопределяем on_click кнопки
     _packer = packer.Packer(on_change=on_packer_button_trigger)
     _packer.packer_button.on_click = on_analyse_click
-    page.add(_packer.render())
+    page.add(_packer.render(), loading_indicator)
 
 
 ft.app(target=main)
