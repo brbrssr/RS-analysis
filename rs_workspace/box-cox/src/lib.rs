@@ -33,7 +33,7 @@ impl CostFunction for BoxCoxLikelihood {
     type Param = f64;
     type Output = f64;
     fn cost(&self, param: &Self::Param) -> Result<Self::Output, Error> {
-        let lambda = if *param < 1e-12 {
+        let lambda = if *param < 1e-6 {
             0.0
         } else {
             *param
@@ -83,7 +83,7 @@ pub fn box_cox(data: &[f64], max_iter: u64) -> Result<Vec<Vec<f64>>, Error> {
     let best_cost = res.state.best_cost;
 
     let transformed_data = problem.transform(best_param);
-    
+
     Ok(vec![
         vec![best_param, best_cost],
         transformed_data,
@@ -96,7 +96,7 @@ pub fn z_score(data: &[f64]) -> Vec<f64> {
     let z_scores: Vec<f64> = data.iter()
         .map(|&x| (x - mean) / std_dev)
         .collect();
-    
+
     z_scores
 
 }
@@ -104,7 +104,7 @@ pub fn z_score(data: &[f64]) -> Vec<f64> {
 pub fn reverse_box_cox_z_score(z: &[f64], mu: f64, sigma: f64, lambda: f64) -> Vec<f64> {
     z.iter().map(|&zi| {
         let yi = zi * sigma + mu;
-        if lambda.abs() < 1e-12 {
+        if lambda.abs() < 1e-6 {
             yi.exp()
         } else {
             (lambda * yi + 1.0).powf(1.0 / lambda)

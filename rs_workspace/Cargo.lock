@@ -22,6 +22,7 @@ name = "akaike-optim"
 version = "0.1.0"
 dependencies = [
  "argmin",
+ "argmin-math",
  "pacf-acf",
 ]
 
