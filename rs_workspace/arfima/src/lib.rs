@@ -240,11 +240,9 @@ pub fn arfima(
 
     let no_diff_down_ci = reverse_frac_diff(&intagrate_data,&down_conf_intervals,d,border);
     let rev_down_ci = reverse_box_cox_z_score(&no_diff_down_ci,rv_mu,rv_std_dev,lambda);
-    let rev_down_ci = rev_down_ci.iter().map(|&x| x * rv_std_dev + rv_mu).collect::<Vec<f64>>();
 
     let no_diff_top_ci = reverse_frac_diff(&intagrate_data,&top_conf_intervals,d,border);
     let rev_top_ci = reverse_box_cox_z_score(&no_diff_top_ci,rv_mu,rv_std_dev,lambda);
-    let rev_top_ci = rev_top_ci.iter().map(|&x| x * rv_std_dev + rv_mu).collect::<Vec<f64>>();
 
     let ci = rev_down_ci.iter().zip(rev_top_ci.iter()).map(|(&d, &t)| (d,t)).collect::<Vec<(f64,f64)>>();
 
@@ -321,7 +319,7 @@ fn forecast(
 
 fn train_test_split(data: &[f64]) -> (Vec<f64>, Vec<f64>) {
     let n = data.len();
-    let split_idx = ((n as f64) * 0.99).round() as usize;
+    let split_idx = ((n as f64) * 0.9).round() as usize;
 
     let train = data[..split_idx].to_vec();
     let valid = data[split_idx..].to_vec();
@@ -346,7 +344,7 @@ pub fn impulse(horizon: usize, phi: &[f64], theta: &[f64], d: f64, border: usize
         let sum: f64 = phi.iter()
             .take(end)
             .enumerate()
-            .map(|(i, &ph)| ph * pi[m - i - 1])
+            .map(|(i, &phi)| phi * pi[m - i - 1])
             .sum();
         pi[m] = sum;
     }
