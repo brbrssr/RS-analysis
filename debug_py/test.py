@@ -14,7 +14,6 @@ output = "price_series.json"
 split_size = 0.7
 horizon = 100
 
-
 common.file_clean(path="price_series.json")
 print("File cleaned")
 load_data.get_price_series(symbol, interval, since, output)

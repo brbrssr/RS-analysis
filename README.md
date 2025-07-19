@@ -1,32 +1,24 @@
 # RS-analysis
 ***Checking the efficiency/precision of RS-analysis***
 --
-**💻Creators:**
-- brbrssr
-- san4ez1337
-----
-### 🌲Project tree
-```
-rsapp
-├── librslogic.so // for Linux
-├── rslogic.dll // for win
-├── main.py
-├──── data
-|     ├── price_series.json
-|     ├── rs_series.json
-|     └── scaled_rs_series.json
-└── ...
-```
 ### 🖊️Description  
-#### rs_workspace
-This directory contains the entire logic code of a program written in Rust as a library.  
-More information about the code structure can be found in the file ./rs_workspace/readme.md  
 
+#### rs_workspace
+This directory contains the entire logic code of a program written in Rust as a python library.  
+We work through pyo3 with maturin.
 #### rsapp
 This directory contains the visualization of time series, rs-analysis and etc.   
-Also more information in ./rsapp/readme.md  
-#### debug 
-This folder contains the test scripts used in development.   
-They do not have complex algorithms and are needed as an example of Python working with a self-written Rust library.
+!ATTENTION!
+Rsapp does not support the new version of logic written in rust, because we switched to the pyo3 system and the application developer did not have time to adapt the code.
 
-**to be continued**
+### 🔨Usage
+Install maturin 
+```
+pip install maturin
+```
+Build the module in rs_workspace/sarfimax_model
+```
+/rs_workspace/sarfimax_model > maturin develop
+
+```
+Then you can use the model. Examples in debug_py.
