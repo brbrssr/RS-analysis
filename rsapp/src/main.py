@@ -1,4 +1,6 @@
 import flet as ft
+import multiprocessing
+
 import date_picker
 import time_picker
 import trade_pair_input
@@ -97,7 +99,9 @@ def main(page: ft.Page):
 
     # Callback для передачи параметров в lib_handler
     def on_packer_button_trigger(parameters):
-        lib_handler.run_rs_anal(parameters)
+        # Запуск анализа во внешнем процессе
+        p = multiprocessing.Process(target=lib_handler.run_rs_anal, args=(parameters,))
+        p.start()
 
     # Создаем Packer и переопределяем on_click кнопки
     _packer = packer.Packer(on_change=on_packer_button_trigger)
@@ -105,5 +109,6 @@ def main(page: ft.Page):
     page.add(_packer.render(), loading_indicator)
 
 
-ft.app(target=main)
-# ft.app(target=main, view=ft.WEB_BROWSER)
+if __name__ == "__main__":
+    multiprocessing.freeze_support()
+    ft.app(target=main)
