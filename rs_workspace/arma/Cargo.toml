@@ -1,0 +1,9 @@
+[package]
+name = "arma"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+argmin = { version = "0.10.0" }
+pacf-acf = { path = "../pacf-acf" }
+argmin-math = { version = "0.4.0" }
