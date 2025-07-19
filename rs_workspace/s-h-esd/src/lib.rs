@@ -1,6 +1,7 @@
-use std::f64;
 use statrs::distribution::{StudentsT, ContinuousCDF};
-use common::{mean,variance,median};
+use utils::{mean, var, median};
+use std::f64;
+
 
 fn t_ppf(prob: f64, df: f64) -> f64 {
     let t_dist = StudentsT::new(0.0, 1.0, df).unwrap();
@@ -9,64 +10,68 @@ fn t_ppf(prob: f64, df: f64) -> f64 {
 
 fn mad(x: &[f64]) -> f64 {
     let med = median(x);
-    let abs_deviation: Vec<f64> = x.iter().map(|&xi| (xi - med).abs()).collect();
-    median(&abs_deviation)
+    let abs_dev = x.iter().map(|x|  (x - med).abs()).collect::<Vec<f64>>();
+    median(&abs_dev)
 }
 
 fn seasonal_mean(x: &[f64], freq: usize) -> Vec<f64> {
     let mut means = Vec::with_capacity(freq);
-
-    for i in 0..freq {
-        let values: Vec<f64> = x.iter().enumerate()
+    for i in 0..freq { 
+        let values = x.iter().enumerate()
             .filter(|(idx, _)| idx % freq == i)
             .map(|(_, &val)| val)
-            .collect();
-
+            .collect::<Vec<f64>>();
+        
         let mean = if values.is_empty() {
             f64::NAN
         } else {
             values.iter().sum::<f64>() / values.len() as f64
         };
-
         means.push(mean);
     }
-
+    
     means
 }
 
 fn ts_s_md_decomposition(x: &[f64], freq: usize) -> Vec<f64> {
-    let nobs = x.len();
-
-    let period_averages = seasonal_mean(x, freq);
+    let nobs =  x.len();
+    
+    let period_averages = seasonal_mean(&x, freq);
     let mut seasonal = Vec::with_capacity(nobs);
     while seasonal.len() < nobs {
         seasonal.extend_from_slice(&period_averages);
     }
     seasonal.truncate(nobs);
-
-    let med_value = median(x);
+    
+    let med_value = median(&x);
     let median_vec = vec![med_value; nobs];
-
-    let residual: Vec<f64> = x.iter()
+    
+    let residual = x.iter()
         .zip(seasonal.iter())
         .zip(median_vec.iter())
         .map(|((&obs, &s), &m)| obs - s - m)
-        .collect();
-
+        .collect::<Vec<f64>>();
+    
     residual
 }
 
 fn esd_test_statistics(x: &[f64], hybrid: Option<bool>) -> (f64, f64) {
-    let hybrid = hybrid.unwrap_or(true);
-
+    let hybrid =  hybrid.unwrap_or(true);
+    
     if hybrid {
         (median(x), mad(x))
     } else {
-        (mean(x), variance(x).sqrt())
+        (mean(x), var(x).sqrt())
     }
 }
 
-pub fn esd_test(x: &[f64], freq: usize, alpha: Option<f64>, ub: Option<f64>, hybrid: Option<bool>) -> Vec<usize> {
+pub fn esd_test(
+    x: &[f64], 
+    freq: usize, 
+    alpha: Option<f64>, 
+    ub: Option<f64>, 
+    hybrid: Option<bool>
+) -> Vec<usize> {
     let mut ub = ub.unwrap_or(0.499);
     let alpha = alpha.unwrap_or(0.95);
     let hybrid = hybrid.unwrap_or(true);
@@ -74,17 +79,18 @@ pub fn esd_test(x: &[f64], freq: usize, alpha: Option<f64>, ub: Option<f64>, hyb
     if ub > 0.4999 {
         ub = 0.499;
     }
-
+    
     let nobs = x.len();
     let k = (ub * nobs as f64).floor().max(1.0) as usize;
-
-
+    
     let residuals = ts_s_md_decomposition(x, freq);
     let mut res: Vec<Option<f64>> = residuals.into_iter().map(Some).collect();
     let mut anomalies = Vec::new();
 
     for i in 1..=k {
-        let unmasked: Vec<f64> = res.iter().filter_map(|&val| val).collect();
+        let unmasked: Vec<f64> = res.iter()
+            .filter_map(|&val| val)
+            .collect();
         if unmasked.is_empty() {
             break;
         }

@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-argmin = { version = "0.10.0" }
-common = {path = "../common"}
+argmin = {version = "0.10.0"}
+utils = {path = "../utils"}

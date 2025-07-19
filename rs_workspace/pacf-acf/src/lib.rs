@@ -1,25 +1,5 @@
-use common::{autocov, variance};
+use utils::{autocov, var};
 use std::f64;
-
-pub fn acf(series: &[f64], nlags: usize) -> Vec<f64> {
-    let var = variance(series);
-    let acf:Vec<f64> = autocov(series, nlags).iter().map(|&cov| cov / var).collect();
-
-    acf
-}
-
-pub fn significant_lags(vals: &[f64], threshold: f64) -> Vec<usize> {
-    vals.iter()
-        .enumerate()
-        .filter_map(|(idx, &v)| {
-            if idx >= 1 && v.abs() > threshold {
-                Some(idx)
-            } else {
-                None
-            }
-        })
-        .collect()
-}
 
 
 pub struct YwResult {
@@ -65,4 +45,24 @@ pub fn durbin_yw(series: &[f64], nlags: usize) -> YwResult {
     }
 
     YwResult { pacf, phi }
+}
+
+pub fn acf(series: &[f64], nlags: usize) -> Vec<f64> {
+    let var = var(series);
+    let acf:Vec<f64> = autocov(series, nlags).iter().map(|&cov| cov / var).collect();
+
+    acf
+}
+
+pub fn significant_lags(vals: &[f64], threshold: f64) -> Vec<usize> {
+    vals.iter()
+        .enumerate()
+        .filter_map(|(idx, &v)| {
+            if idx >= 1 && v.abs() > threshold {
+                Some(idx)
+            } else {
+                None
+            }
+        })
+        .collect()
 }
