@@ -1,5 +1,4 @@
-# RS-analysis
-***Checking the efficiency/precision of RS-analysis***
+***ARFIMA model with RS-analysis***
 --
 ### 🖊️Description  
 
@@ -8,10 +7,10 @@ This directory contains the entire logic code of a program written in Rust as a 
 We work through pyo3 with maturin.
 #### rsapp
 This directory contains the visualization of time series, rs-analysis and etc.   
-!ATTENTION!
+##### !ATTENTION!
 Rsapp does not support the new version of logic written in rust, because we switched to the pyo3 system and the application developer did not have time to adapt the code.
 
-### 🔨Usage
+### 🔨Using the model
 Install maturin 
 ```
 pip install maturin
